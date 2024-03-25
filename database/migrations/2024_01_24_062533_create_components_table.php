@@ -13,13 +13,9 @@ return new class extends Migration
     {
         Schema::create('components', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('parentId')->nullable();
             $table->string('type');
-            $table->bigInteger('parentId');
-            $table->bigInteger('page');
-            $table->bigInteger('text_id')->nullable();
-            $table->bigInteger('panel_id')->nullable();
-            $table->foreign('text_id')->references('id')->on('text_fields');
-            $table->foreign('panel_id')->references('id')->on('panels');
+            $table->integer('page');
             $table->timestamps();
         });
     }

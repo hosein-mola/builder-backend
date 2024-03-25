@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Collections\ComponentCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -12,6 +14,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
+
     }
 
     /**
@@ -19,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Collection::macro('repack', function () {
+            return (new ComponentCollection($this->items))->repack();
+        });
     }
 }

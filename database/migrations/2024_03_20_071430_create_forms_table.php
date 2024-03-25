@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('forms', function (Blueprint $table) {
             $table->id();
-            $table->integer('parent_id')->index()->nullable();
             $table->string('name');
+            $table->unsignedBigInteger('parent_id')->index()->nullable();
             $table->foreign('parent_id')->references('id')->on('forms');
             $table->timestamps();
         });

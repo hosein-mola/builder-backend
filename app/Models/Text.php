@@ -9,12 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-class Panel extends Model
+class Text extends Model
 {
     use HasFactory;
-    protected $fillable = ['title','cols','span','component_id'];
+    protected $fillable = ['title','component_id'];
     public function component(): BelongsTo
     {
-        return $this->BelongsTo(Panel::class)->latest();
+        return $this->BelongsTo(Text::class);
     }
 }

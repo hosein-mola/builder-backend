@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('component_panel', function (Blueprint $table) {
+        Schema::create('texts', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('component_id');
-            $table->bigInteger('panel_id');
+            $table->string('title')->nullable();
+            $table->bigInteger('component_id')->unsigned()->index();
             $table->foreign('component_id')->references('id')->on('components');
-            $table->foreign('panel_id')->references('id')->on('panels');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('component_panel', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('panels');
     }
 };
