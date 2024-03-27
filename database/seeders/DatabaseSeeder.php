@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ComponentsTableSeeder::class,
             PanelsTableSeeder::class,
+            FormTableSeeder::class
             // Add more seeders here if needed
         ]);
 //        User::factory()->create([

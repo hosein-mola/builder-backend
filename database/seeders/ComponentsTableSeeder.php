@@ -1,10 +1,11 @@
 <?php
 
+
 namespace Database\Seeders;
 
+use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 
 class ComponentsTableSeeder extends Seeder
 {
@@ -15,33 +16,24 @@ class ComponentsTableSeeder extends Seeder
      */
     public function run()
     {
-        // Create a Faker instance
-        $faker = Faker::create();
-
-        // Define the number of records to generate
-        $numberOfRecords = 5000000; // Inserting 1000 components
-
-        // Define the batch size for insertion
-        $batchSize = 10000 ;// Batch size of 100
-
-        // Generate and insert data into the components table in batches
+        $numberOfRecords = 20;
+        $batchSize = 1;
         for ($i = 1; $i <= $numberOfRecords; $i += $batchSize) {
-            // Generate component data
+            $faker = Faker::create();
             $components = [];
             for ($j = 1; $j <= $batchSize; $j++) {
                 $components[] = [
-                    'parentId' => null, // Assuming parentId can be null
-                    'type' => $faker->randomElement(['panel', 'text']), // Define your types
-                    'page' => $faker->numberBetween(1, 10), // Assuming pages can be between 1 and 10
+                    'parentId' => null,
+                    'type' => $faker->randomElement(['panel', 'text']),
+                    'page' => $faker->numberBetween(1, 10),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
-                error_log("Component inserted: $i + $j");
             }
-            // Batch insert components
             DB::table('components')->insert($components);
-            // Free memory by unsetting the components array
             unset($components);
+            unset($faker);
+            error_log("Inserted $i components");
         }
     }
 }

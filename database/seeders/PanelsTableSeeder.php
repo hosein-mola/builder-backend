@@ -18,20 +18,20 @@ class PanelsTableSeeder extends Seeder
         // Create a Faker instance
         $faker = Faker::create();
 
-        // Fetch all component ids
-        $componentIds = DB::table('components')->pluck('id')->toArray();
+        // Define the maximum size of components
+        $maxComponents = 20; // Change this to your maximum size
 
         // Define the number of panels per component
         $panelsPerComponent = 1; // One panel for each component
 
         // Define the batch size for insertion
-        $batchSize = 1000; // Adjust the batch size as needed
+        $batchSize = 1; // Adjust the batch size as needed
 
         // Initialize a counter for total panels inserted
         $totalPanelsInserted = 0;
 
         // Iterate over each component ID and create a panel
-        foreach ($componentIds as $componentId) {
+        for ($componentId = 1; $componentId <= $maxComponents; $componentId++) {
             $panels = [];
             for ($i = 0; $i < $panelsPerComponent; $i++) {
                 $panels[] = [
@@ -48,7 +48,6 @@ class PanelsTableSeeder extends Seeder
                     DB::table('panels')->insert($panels);
                     $totalPanelsInserted += count($panels);
                     error_log("Inserted $totalPanelsInserted panels.");
-                    unset($panels);
                     $panels = [];
                 }
             }
@@ -57,7 +56,6 @@ class PanelsTableSeeder extends Seeder
                 DB::table('panels')->insert($panels);
                 $totalPanelsInserted += count($panels);
                 error_log("Inserted $totalPanelsInserted panels.");
-                unset($panels);
             }
         }
     }

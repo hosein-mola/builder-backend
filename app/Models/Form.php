@@ -21,13 +21,8 @@ class Form extends Model
     public function children(): hasMany{
         return $this->hasMany(Form::class,'form_id','id');
     }
-    public function panels()
+    public function components(): BelongsToMany
     {
-        return $this->morphedByMany(Panel::class, 'taggable')->using(Formable::class);
-    }
-
-    public function textFields()
-    {
-        return $this->morphedByMany(TextField::class, 'taggable')->using(Formable::class);
+        return  $this->belongsToMany(Component::class);
     }
 }
