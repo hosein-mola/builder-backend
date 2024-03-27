@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Form;
+use App\Types\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class FormController extends Controller
 {
@@ -11,15 +14,8 @@ class FormController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function attach()
-    {
-        //
+        $forms = Form::all();
+        return ApiResponse::success(data: ['forms' => $forms]);
     }
 
     /**
@@ -27,7 +23,18 @@ class FormController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            // Define your validation rules here
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::fail(errors: $validator->errors()->toArray(), statusCode: 400);
+        }
+
+        // Create the resource
+        // Example: $form = Form::create($request->all());
+
+        return ApiResponse::success(messages: ['message' => 'Resource created successfully'], statusCode: 201);
     }
 
     /**
@@ -35,15 +42,13 @@ class FormController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
+        $form = Form::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        if (!$form) {
+            return ApiResponse::fail(errors: ['error' => 'Resource not found'], statusCode: 404);
+        }
+
+        return ApiResponse::success(data: ['form' => $form]);
     }
 
     /**
@@ -51,7 +56,24 @@ class FormController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $form = Form::find($id);
+
+        if (!$form) {
+            return ApiResponse::fail(errors: ['error' => 'Resource not found'], statusCode: 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            // Define your validation rules here
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::fail(errors: $validator->errors()->toArray(), statusCode: 400);
+        }
+
+        // Update the resource
+        // Example: $form->update($request->all());
+
+        return ApiResponse::success(messages: ['message' => 'Resource updated successfully'], statusCode: 200);
     }
 
     /**
@@ -59,6 +81,18 @@ class FormController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $form = Form::find($id);
+
+        if (!$form) {
+            return ApiResponse::fail(errors: ['error' => 'Resource not found'], statusCode: 404);
+        }
+
+        $form->isDeleted = true;
+
+        if ($form->save()) {
+            return ApiResponse::success(messages: ['message' => 'Resource marked as deleted successfully'], statusCode: 200);
+        } else {
+            return ApiResponse::fail(errors: ['error' => 'Failed to mark resource as deleted'], statusCode: 500);
+        }
     }
 }
