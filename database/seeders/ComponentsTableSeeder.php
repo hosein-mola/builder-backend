@@ -24,7 +24,7 @@ class ComponentsTableSeeder extends Seeder
             for ($j = 1; $j <= $batchSize; $j++) {
                 $components[] = [
                     'parentId' => null,
-                    'type' => $faker->randomElement(['panel', 'text']),
+                    'type' => $i * $j % 2 == 0 ? 'panel' : 'text',
                     'page' => $faker->numberBetween(1, 10),
                     'created_at' => now(),
                     'updated_at' => now(),

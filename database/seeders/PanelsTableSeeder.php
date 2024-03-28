@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Component;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
@@ -34,28 +35,24 @@ class PanelsTableSeeder extends Seeder
         for ($componentId = 1; $componentId <= $maxComponents; $componentId++) {
             $panels = [];
             for ($i = 0; $i < $panelsPerComponent; $i++) {
-                $panels[] = [
-                    'title' => $faker->sentence(),
-                    'cols' => $faker->numberBetween(1, 5),
-                    'span' => $faker->numberBetween(1, 3),
-                    'component_id' => $componentId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-
-                // Insert panels in batches
-                if (count($panels) >= $batchSize) {
-                    DB::table('panels')->insert($panels);
-                    $totalPanelsInserted += count($panels);
-                    error_log("Inserted $totalPanelsInserted panels.");
-                    $panels = [];
-                }
-            }
-            // Insert any remaining panels
-            if (!empty($panels)) {
-                DB::table('panels')->insert($panels);
-                $totalPanelsInserted += count($panels);
-                error_log("Inserted $totalPanelsInserted panels.");
+                $component = Component::find($componentId);
+                if($component->type == 'panel') {
+                    $panels[] = [
+                        'title' => $faker->sentence(),
+                        'cols' => (string) $faker->numberBetween(1, 5),
+                        'span' => (string) $faker->numberBetween(1, 3),
+                        'component_id' => $componentId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                    // Insert panels in batches
+                    if (count($panels) >= $batchSize) {
+                        DB::table('panels')->insert($panels);
+                        $totalPanelsInserted += count($panels);
+                        error_log("Inserted $totalPanelsInserted panels.");
+                        $panels = [];
+                    }
+                };
             }
         }
     }

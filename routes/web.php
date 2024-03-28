@@ -18,6 +18,9 @@ Route::get('/forms', [FormController::class, 'index'])->name('forms.index');
 // Route for storing a newly created resource in storage
 Route::post('/forms', [FormController::class, 'store'])->name('forms.store');
 
+// Route to fetch statistics
+Route::get('/forms/stats/', [FormController::class, 'stats'])->name('forms.stats');
+
 // Route for displaying the specified resource
 Route::get('/forms/{id}', [FormController::class, 'show'])->name('forms.show');
 

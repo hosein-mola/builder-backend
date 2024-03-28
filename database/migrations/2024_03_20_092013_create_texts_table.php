@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('texts', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->nullable();
+            $table->string('label')->nullable();
+            $table->string('placeholder')->nullable();
+            $table->string('helper_text')->nullable();
+            $table->boolean('required')->default(false);
             $table->bigInteger('component_id')->unsigned()->index();
             $table->foreign('component_id')->references('id')->on('components');
             $table->timestamps();

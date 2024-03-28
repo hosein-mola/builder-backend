@@ -14,7 +14,14 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 class Form extends Model
 {
     use HasFactory;
-
+    protected $fillable = [
+        'name',
+        'description',
+        'published',
+        'visit',
+        'submission',
+        'share_url'
+    ];
     public function parent(): BelongsToMany{
         return $this->belongsToMany(Form::class,'form_id','id');
     }

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('panels', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
-            $table->integer('cols');
-            $table->integer('span');
+            $table->string('cols')->default('1');
+            $table->string('span')->default('1');
             $table->unsignedBigInteger('component_id')->index();
             $table->foreign('component_id')->references('id')->on('components');
             $table->timestamps();

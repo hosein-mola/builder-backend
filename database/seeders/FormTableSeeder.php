@@ -2,11 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Component;
 use App\Models\Form;
-use App\Models\Panel;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class FormTableSeeder extends Seeder
 {
@@ -17,19 +15,33 @@ class FormTableSeeder extends Seeder
     {
         // Create some sample forms
         $forms = [
-            ['name' => 'Form A', 'parent_id' => null],
-            ['name' => 'Form B', 'parent_id' => null],
-            ['name' => 'Form C', 'parent_id' => null],
+            [
+                'name' => 'Form A',
+                'description' => 'Description for Form A',
+                'published' => false,
+                'visit' => 10,
+                'share_url' => Str::uuid()->toString(),
+            ],
+            [
+                'name' => 'Form B',
+                'description' => 'Description for Form B',
+                'published' => false,
+                'visit' => 5,
+                'share_url' => Str::uuid()->toString(),
+            ],
+            [
+                'name' => 'Form C',
+                'description' => 'Description for Form C',
+                'published' => true,
+                'visit' => 20,
+                'share_url' => Str::uuid()->toString(),
+            ],
             // Add more sample forms as needed
         ];
 
-        // Insert data into the forms table and assign panels
+        // Insert data into the forms table
         foreach ($forms as $form) {
-            $createdForm = Form::create($form);
-
-            // Assign panels to forms
-            $components = Component::inRandomOrder()->take(rand(1, 3))->get(); // Assuming each form can have 1 to 3 components
-            $createdForm->components()->attach($components);
+            Form::create($form);
         }
     }
 }
