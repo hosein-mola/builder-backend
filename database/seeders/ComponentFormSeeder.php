@@ -1,8 +1,11 @@
 <?php
+
 namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use App\Models\Form;
 use App\Models\Component;
+use Symfony\Component\Uid\Ulid;
 
 class ComponentFormSeeder extends Seeder
 {
@@ -15,7 +18,7 @@ class ComponentFormSeeder extends Seeder
         // Seed component_form entries
         foreach ($forms as $form) {
             foreach ($components as $component) {
-                $form->components()->save($component);
+                $form->components()->attach($component->id);
             }
         }
     }

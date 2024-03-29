@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger("form_id");
             $table->foreign('form_id')->references('id')->on('forms');
-            $table->unsignedBigInteger('component_id');
+            $table->ulid('component_id')->index();
             $table->foreign('component_id')->references('id')->on('components');
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,7 +12,8 @@ use InvalidArgumentException;
 
 class Component extends Model
 {
-    use HasFactory;
+    use HasFactory,HasUlids;
+    protected $fillable = ['id','type','parentId','text_id','page'];
     public function forms(): BelongsToMany
     {
         return  $this->belongsToMany(Form::class);

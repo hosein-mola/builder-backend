@@ -3,9 +3,11 @@
 
 namespace Database\Seeders;
 
+use Carbon\Traits\Date;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Uid\Ulid;
 
 class ComponentsTableSeeder extends Seeder
 {
@@ -23,9 +25,10 @@ class ComponentsTableSeeder extends Seeder
             $components = [];
             for ($j = 1; $j <= $batchSize; $j++) {
                 $components[] = [
+                    'id' => Ulid::generate(\Illuminate\Support\Facades\Date::now()),
                     'parentId' => null,
                     'type' => $i * $j % 2 == 0 ? 'panel' : 'text',
-                    'page' => $faker->numberBetween(1, 10),
+                    'page' => $faker->numberBetween(1, 4),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];

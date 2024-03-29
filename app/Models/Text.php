@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 class Text extends Model
 {
     use HasFactory;
-    protected $fillable = ['title','component_id'];
+    protected $fillable = ['label','placeholder','helper_text','required','component_id'];
     public function component(): BelongsTo
     {
         return $this->BelongsTo(Text::class);

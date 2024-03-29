@@ -9,14 +9,17 @@ Route::get('/', function () {
     DB::enableQueryLog();
     $value = Component::limit(100)->with('panel')->get();
     $query = DB::getQueryLog();
+    $val = [$value,$query];
     return [$value,$query];
 });
-
+Route::get('/xd', function () {
+    xdebug_info();
+});
 // Route for displaying a listing of the resource
 Route::get('/forms', [FormController::class, 'index'])->name('forms.index');
 
 // Route for storing a newly created resource in storage
-Route::post('/forms', [FormController::class, 'store'])->name('forms.store');
+Route::post('/forms', [FormController::class, 'create'])->name('forms.create');
 
 // Route to fetch statistics
 Route::get('/forms/stats/', [FormController::class, 'stats'])->name('forms.stats');

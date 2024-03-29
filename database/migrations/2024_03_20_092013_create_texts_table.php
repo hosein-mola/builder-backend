@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('placeholder')->nullable();
             $table->string('helper_text')->nullable();
             $table->boolean('required')->default(false);
-            $table->bigInteger('component_id')->unsigned()->index();
+            $table->ulid('component_id')->index();
             $table->foreign('component_id')->references('id')->on('components');
             $table->timestamps();
         });

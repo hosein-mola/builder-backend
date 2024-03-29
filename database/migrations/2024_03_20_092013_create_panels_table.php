@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->string('cols')->default('1');
             $table->string('span')->default('1');
-            $table->unsignedBigInteger('component_id')->index();
+            $table->ulid('component_id')->index();
             $table->foreign('component_id')->references('id')->on('components');
             $table->timestamps();
         });

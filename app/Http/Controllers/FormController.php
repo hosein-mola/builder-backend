@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Component;
 use App\Models\Form;
+use App\Models\Panel;
+use App\Models\Text;
 use App\Types\ApiResponse;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use function MongoDB\BSON\toJSON;
 
@@ -56,7 +61,7 @@ class FormController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function create(Request $request)
     {
         try {
             // Validate incoming request data
@@ -94,46 +99,77 @@ class FormController extends Controller
      */
     public function show(string $id)
     {
-        $form = Form::where('id',$id)->with(['components.panel', 'components.text'])->get();
+        $form = Form::where('id', $id)->with(['components.panel', 'components.text'])->first();
 
         if (!$form) {
             return ApiResponse::fail(errors: ['error' => 'Resource not found'], statusCode: 404);
         }
-        $form = $form->flatMap(function ($formItem) {
-            return $formItem->components->map(function ($component) {
-                $component['extraAttributes'] = $component[$component->type];
-                return collect($component)->reject(function ($value,$key) use($component) {
-                    return $value == null || $key == $component['type'];
-                });
+        $form->components = $form->components->map(function ($component) {
+            $component['extraAttributes'] = $component[$component->type];
+            return collect($component)->reject(function ($value, $key) use ($component) {
+                return $value == null || $key == $component['type'];
             });
         });
-        return ApiResponse::success(data: ['form' => $form->values()]);
+        return ApiResponse::success(data: ['form' => $form]);
     }
 
     /**
      * Update the specified resource in storage.
+     * @throws Exception
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
+        // Find the form
         $form = Form::find($id);
 
         if (!$form) {
             return ApiResponse::fail(errors: ['error' => 'Resource not found'], statusCode: 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            // Define your validation rules here
-        ]);
+        $requestData = $request->json()->all();
 
+// Validate request data
+        $validator = Validator::make($requestData, []);
         if ($validator->fails()) {
             return ApiResponse::fail(errors: $validator->errors()->toArray(), statusCode: 400);
         }
 
-        // Update the resource
-        // Example: $form->update($request->all());
+        try {
+            // Begin the transaction
+            DB::beginTransaction();
 
-        return ApiResponse::success(messages: ['message' => 'Resource updated successfully'], statusCode: 200);
+            foreach ($requestData as $requestDataItem) {
+                $componentData = collect($requestDataItem)->except(['extraAttributes', 'pivot'])->toArray();
+
+                // Update or create component
+                $createdComponent = Component::updateOrCreate(['id' => $componentData['id']], $componentData);
+
+                // Update or create specific type (Panel or Text)
+                $extraAttributes = $requestDataItem['extraAttributes'] ?? [];
+                switch ($createdComponent->type) {
+                    case "panel":
+                        Panel::updateOrCreate(['component_id' => $createdComponent->id], $extraAttributes);
+                        break;
+                    case "text":
+                        Text::updateOrCreate(['component_id' => $createdComponent->id], $extraAttributes);
+                        break;
+                }
+
+                // Attach component to form
+                $form->components()->syncWithoutDetaching([$createdComponent->id]);
+            }
+
+            // Commit the transaction
+            DB::commit();
+
+            return ApiResponse::success(messages: ['message' => 'Resource updated successfully'], statusCode: 200);
+        } catch (Exception $e) {
+            // Rollback the transaction on exception
+            DB::rollback();
+            throw $e; // Re-throw the caught exception
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.

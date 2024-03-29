@@ -8,6 +8,7 @@ use Faker\Factory as Faker;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Spatie\Ulid\Ulid;
 
 class TextTableSeeder extends Seeder
 {
@@ -19,11 +20,11 @@ class TextTableSeeder extends Seeder
         // Create a Faker instance
         $faker = Faker::create();
 
-        // Define the maximum size of components
-        $maxComponents = 20; // Change this to your maximum size
+        // Fetch all existing component IDs
+        $componentIds = Component::pluck('id')->toArray();
 
         // Define the number of texts per component
-        $textsPerComponent = 1; // One panel for each component
+        $textsPerComponent = 1; // One text for each component
 
         // Define the batch size for insertion
         $batchSize = 1; // Adjust the batch size as needed
@@ -31,12 +32,12 @@ class TextTableSeeder extends Seeder
         // Initialize a counter for total texts inserted
         $totalTextsInserted = 0;
 
-        // Iterate over each component ID and create a panel
-        for ($componentId = 1; $componentId <= $maxComponents; $componentId++) {
+        // Iterate over each component ID and create a text
+        foreach ($componentIds as $componentId) {
             $texts = [];
             for ($i = 0; $i < $textsPerComponent; $i++) {
                 $component = Component::find($componentId);
-                if ($component->type == 'text') {
+                if ($component && $component->type == 'text') {
                     $texts[] = [
                         'label' => $faker->word(),
                         'placeholder' => $faker->sentence(),
