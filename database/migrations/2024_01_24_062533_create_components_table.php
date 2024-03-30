@@ -15,7 +15,9 @@ return new class extends Migration
             $table->ulid('id')->index()->unique()->primary();
             $table->bigInteger('parentId')->nullable();
             $table->string('type');
+            $table->integer('index')->default(0);
             $table->integer('page');
+            $table->longText('extraAttributes')->nullable();
             $table->timestamps();
         });
     }

@@ -99,17 +99,12 @@ class FormController extends Controller
      */
     public function show(string $id)
     {
-        $form = Form::where('id', $id)->with(['components.panel', 'components.text'])->first();
+        $form = Form::with('components')->find($id);
 
         if (!$form) {
             return ApiResponse::fail(errors: ['error' => 'Resource not found'], statusCode: 404);
         }
-        $form->components = $form->components->map(function ($component) {
-            $component['extraAttributes'] = $component[$component->type];
-            return collect($component)->reject(function ($value, $key) use ($component) {
-                return $value == null || $key == $component['type'];
-            });
-        });
+
         return ApiResponse::success(data: ['form' => $form]);
     }
 
@@ -121,47 +116,27 @@ class FormController extends Controller
     {
         // Find the form
         $form = Form::find($id);
-
         if (!$form) {
             return ApiResponse::fail(errors: ['error' => 'Resource not found'], statusCode: 404);
         }
 
-        $requestData = $request->json()->all();
-
-// Validate request data
-        $validator = Validator::make($requestData, []);
+        $components = $request->json()->all();
+        // Validate request data
+        $validator = Validator::make($components, []);
         if ($validator->fails()) {
             return ApiResponse::fail(errors: $validator->errors()->toArray(), statusCode: 400);
         }
-
         try {
             // Begin the transaction
             DB::beginTransaction();
-
-            foreach ($requestData as $requestDataItem) {
-                $componentData = collect($requestDataItem)->except(['extraAttributes', 'pivot'])->toArray();
-
+            foreach ($components as $component) {
                 // Update or create component
-                $createdComponent = Component::updateOrCreate(['id' => $componentData['id']], $componentData);
-
-                // Update or create specific type (Panel or Text)
-                $extraAttributes = $requestDataItem['extraAttributes'] ?? [];
-                switch ($createdComponent->type) {
-                    case "panel":
-                        Panel::updateOrCreate(['component_id' => $createdComponent->id], $extraAttributes);
-                        break;
-                    case "text":
-                        Text::updateOrCreate(['component_id' => $createdComponent->id], $extraAttributes);
-                        break;
-                }
-
+                $createdComponent = Component::updateOrCreate(['id' => $component['id']], $component);
                 // Attach component to form
                 $form->components()->syncWithoutDetaching([$createdComponent->id]);
             }
-
             // Commit the transaction
             DB::commit();
-
             return ApiResponse::success(messages: ['message' => 'Resource updated successfully'], statusCode: 200);
         } catch (Exception $e) {
             // Rollback the transaction on exception

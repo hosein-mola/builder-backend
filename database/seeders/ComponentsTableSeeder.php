@@ -29,6 +29,7 @@ class ComponentsTableSeeder extends Seeder
                     'parentId' => null,
                     'type' => $i * $j % 2 == 0 ? 'panel' : 'text',
                     'page' => $faker->numberBetween(1, 4),
+                    'extraAttributes' => null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];

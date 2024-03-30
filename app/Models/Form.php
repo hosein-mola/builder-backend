@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\Log;
 
 class Form extends Model
 {
@@ -22,6 +23,7 @@ class Form extends Model
         'submission',
         'share_url'
     ];
+
     public function parent(): BelongsToMany{
         return $this->belongsToMany(Form::class,'form_id','id');
     }

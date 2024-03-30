@@ -13,17 +13,15 @@ use InvalidArgumentException;
 class Component extends Model
 {
     use HasFactory,HasUlids;
-    protected $fillable = ['id','type','parentId','text_id','page'];
+
+    protected $fillable = ['id','type','page','parentId','extraAttributes'];
+    protected $casts = [
+        'extraAttributes' => 'array',
+    ];
+
     public function forms(): BelongsToMany
     {
         return  $this->belongsToMany(Form::class);
     }
-    public function panel(): HasOne
-    {
-        return $this->hasOne(Panel::class);
-    }
-    public function text(): HasOne
-    {
-        return $this->hasOne(Text::class);
-    }
+
 }
