@@ -14,7 +14,7 @@ class Component extends Model
 {
     use HasFactory,HasUlids;
 
-    protected $fillable = ['id','type','page','parentId','extraAttributes'];
+    protected $fillable = ['id','type','index','page','parentId','extraAttributes'];
     protected $casts = [
         'extraAttributes' => 'array',
     ];
