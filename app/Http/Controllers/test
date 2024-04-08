@@ -1,0 +1,13 @@
+ useEffect(() => {
+        const cloneElements = JSON.parse(JSON.stringify(elements));
+        const clonePages = JSON.parse(JSON.stringify(pages));
+        const updatedElements = cloneElements.map((element: any) => {
+            const pageIndex = clonePages.indexOf(element.page);
+            if (pageIndex !== -1) {
+                return { ...element, page: pageIndex + 1 };
+            } else {
+                return element;
+            }
+        });
+        setElements(updatedElements);
+    }, [pages])

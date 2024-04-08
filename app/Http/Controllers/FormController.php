@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Component;
 use App\Models\Form;
+use App\Models\Page;
 use App\Models\Panel;
 use App\Models\Text;
 use App\Types\ApiResponse;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use function MongoDB\BSON\toJSON;
 
 class FormController extends Controller
 {
@@ -74,6 +75,11 @@ class FormController extends Controller
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'],
             ]);
+            $page = new Page();
+            $page->form_id = $form->id;
+            $page->save();
+            $page->extraAttributes = json_encode([1]);
+            $form->page()->save($page);
             // Check if form creation was successful
             if ($form) {
                 // Return success response
@@ -99,7 +105,7 @@ class FormController extends Controller
      */
     public function show(string $id)
     {
-        $form = Form::with('components')->find($id);
+        $form = Form::with(['components','page'])->find($id);
 
         if (!$form) {
             return ApiResponse::fail(errors: ['error' => 'Resource not found'], statusCode: 404);
@@ -115,12 +121,16 @@ class FormController extends Controller
     public function update(Request $request, $id)
     {
         // Find the form
-        $form = Form::find($id);
+        $form = Form::with('page')->find($id);
+
         if (!$form) {
             return ApiResponse::fail(errors: ['error' => 'Resource not found'], statusCode: 404);
         }
 
-        $components = $request->json()->all();
+        $request = $request->json()->all();
+        Log::error(print_r($request,true));
+        $components = $request['componenets'];
+        $page = $request['page'];
         // Validate request data
         $validator = Validator::make($components, []);
         if ($validator->fails()) {
@@ -129,9 +139,14 @@ class FormController extends Controller
         try {
             // Begin the transaction
             DB::beginTransaction();
+            $form->page->update([
+                'extraAttributes' => json_encode($page)
+            ]);
+            Log::error(print_r($components, true));
             foreach ($components as $component) {
                 // Update or create component
-                $createdComponent = Component::updateOrCreate(['id' => $component['id']], $component);
+                $createdComponent = Component::updateOrCreate(['id' => $component['id'],]
+                    , $component);
                 // Attach component to form
                 $form->components()->syncWithoutDetaching([$createdComponent->id]);
             }

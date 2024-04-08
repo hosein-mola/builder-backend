@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Log;
@@ -33,5 +34,9 @@ class Form extends Model
     public function components(): BelongsToMany
     {
         return  $this->belongsToMany(Component::class);
+    }
+    public function page(): HasOne
+    {
+        return  $this->hasOne(Page::class);
     }
 }
