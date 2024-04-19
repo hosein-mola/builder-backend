@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 class Form extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'description',
@@ -38,5 +39,9 @@ class Form extends Model
     public function page(): HasOne
     {
         return  $this->hasOne(Page::class);
+    }
+    public function setting(): HasOne
+    {
+        return  $this->hasOne(Setting::class);
     }
 }

@@ -128,7 +128,6 @@ class FormController extends Controller
         }
 
         $request = $request->json()->all();
-        Log::error(print_r($request,true));
         $components = $request['componenets'];
         $page = $request['page'];
         // Validate request data
@@ -142,14 +141,14 @@ class FormController extends Controller
             $form->page->update([
                 'extraAttributes' => json_encode($page)
             ]);
-            Log::error(print_r($components, true));
+            $arr= [];
             foreach ($components as $component) {
-                // Update or create component
                 $createdComponent = Component::updateOrCreate(['id' => $component['id'],]
                     , $component);
-                // Attach component to form
-                $form->components()->syncWithoutDetaching([$createdComponent->id]);
+                array_push($arr,$createdComponent->id);
             }
+            Log::error(print_r($arr,false));
+            $form->components()->sync($arr);
             // Commit the transaction
             DB::commit();
             return ApiResponse::success(messages: ['message' => 'Resource updated successfully'], statusCode: 200);
